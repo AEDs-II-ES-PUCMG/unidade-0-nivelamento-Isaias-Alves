@@ -1,6 +1,10 @@
 package com.example.model;
 
 import java.text.NumberFormat;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
+
 
 public abstract class Produto {
 
@@ -28,10 +32,17 @@ public abstract class Produto {
 		}
 	}
 
+	public String getDescricao() {
+		return descricao;
+	}
 
-	public String getDescricao() { return descricao; }
-	public double getPrecoCusto() { return precoCusto; }
-	public double getMargemLucro() { return margemLucro; }
+	public double getPrecoCusto() {
+		return precoCusto;
+	}
+
+	public double getMargemLucro() {
+		return margemLucro;
+	}
 
 	/**
 	 * Construtor completo. Os valores default, em caso de erro, são:
@@ -102,5 +113,37 @@ public abstract class Produto {
 	 *         descrição;preçoDeCusto;margemDeLucro;[dataDeValidade]"
 	 */
 	public abstract String gerarDadosTexto();
+
+	/**
+	 * Cria um produto a partir de uma linha de dados em formato texto. A linha de
+	 * dados deve estar de acordo com a
+	 * formatação
+	 * "tipo; descrição;preçoDeCusto;margemDeLucro;[dataDeValidade]"
+	 * ou o funcionamento não será garantido. Os tipos são 1 para produto não
+	 * perecível e 2 para perecível.
+	 * 
+	 * @param linha Linha com os dados do produto a ser criado.
+	 * @return Um produto com os dados recebidos
+	 */
+	static Produto criarDoTexto(String linha) {
+		Produto novoProduto = null;
+		String[] dados = linha.split(";");
+
+		int tipo = Integer.parseInt(dados[0]);
+		String descricao = dados[1];
+		double precoCusto = Double.parseDouble(dados[2]);
+		double margemLucro = Double.parseDouble(dados[3]);
+
+		if (tipo == 1){
+			novoProduto = new ProdutoNaoPerecivel(descricao, precoCusto, margemLucro);
+		} else if (tipo == 2){
+			DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			LocalDate dataValidade = LocalDate.parse(dados[4], formato);
+			novoProduto = new ProdutoPerecivel(descricao, precoCusto, margemLucro, dataValidade);
+		} else {
+			throw new IllegalArgumentException("Tipo de produto inválido: " + tipo);
+		}
+		return novoProduto;
+	}
 
 }
