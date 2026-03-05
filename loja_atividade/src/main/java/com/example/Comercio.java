@@ -1,3 +1,4 @@
+package com.example;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -6,6 +7,9 @@ import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
+import com.example.model.Produto;
+import com.example.model.ProdutoNaoPerecivel;
+import com.example.model.ProdutoPerecivel;
 
 public class Comercio {
     /** Para inclusão de novos produtos no vetor */
@@ -58,8 +62,30 @@ public class Comercio {
      * @return Um vetor com os produtos carregados, ou vazio em caso de problemas de leitura.
      */
     static Produto[] lerProdutos(String nomeArquivoDados) {
-        Produto[] vetorProdutos;
-        //TO DO
+        Produto[] vetorProdutos = null;
+        try {
+            File arquivo = new File(nomeArquivoDados);
+            Scanner leitor = new Scanner(arquivo, Charset.forName("UTF-8"));
+
+            if (leitor.hasNextLine()) {
+                int quantidadeProdutos = Integer.parseInt(leitor.nextLine());
+                vetorProdutos = new Produto[quantidadeProdutos + MAX_NOVOS_PRODUTOS];
+                quantosProdutos = 0;
+
+                for (int i = 0; i < quantidadeProdutos && leitor.hasNextLine(); i++) {
+                String linha = leitor.nextLine();
+                vetorProdutos[quantosProdutos] = Produto.criarDoTexto(linha);
+                quantosProdutos++;
+            }
+            } else {
+                System.out.println("Arquivo vazio: " + nomeArquivoDados);
+            }
+            leitor.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Arquivo não encontrado: " + nomeArquivoDados);
+        } catch (IOException e) {
+            System.out.println("Erro ao ler o arquivo: " + nomeArquivoDados);
+        }
         return vetorProdutos;
     }
 
@@ -94,7 +120,22 @@ public class Comercio {
      * @param nomeArquivo Nome do arquivo a ser gravado.
      */
     public static void salvarProdutos(String nomeArquivo){
-        //TO DO  
+        try {
+        FileWriter escritor = new FileWriter(nomeArquivo, Charset.forName("UTF-8"));
+        
+        // Escreve a quantidade de produtos atual
+        escritor.write(quantosProdutos + "\n");
+        
+        // Escreve os dados de cada produto
+        for (int i = 0; i < quantosProdutos; i++) {
+            escritor.write(produtosCadastrados[i].gerarDadosTexto() + "\n");
+        }
+        
+        escritor.close();
+        System.out.println("Dados salvos com sucesso!");
+    } catch (IOException e) {
+        System.out.println("Erro ao salvar os produtos: " + e.getMessage());
+    }
     }
 
     public static void main(String[] args) throws Exception {

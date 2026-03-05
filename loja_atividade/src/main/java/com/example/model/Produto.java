@@ -125,7 +125,7 @@ public abstract class Produto {
 	 * @param linha Linha com os dados do produto a ser criado.
 	 * @return Um produto com os dados recebidos
 	 */
-	static Produto criarDoTexto(String linha) {
+	static public Produto criarDoTexto(String linha) {
 		Produto novoProduto = null;
 		String[] dados = linha.split(";");
 
