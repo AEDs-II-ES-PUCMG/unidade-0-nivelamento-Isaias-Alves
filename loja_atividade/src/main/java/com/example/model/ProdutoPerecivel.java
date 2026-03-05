@@ -19,9 +19,6 @@ public class ProdutoPerecivel extends Produto {
     }
 
     public void setDataValidade(LocalDate dataValidade) {
-        if (dataValidade.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException("Data de validade não pode ser mais antiga que a data atual");
-        }
         this.dataValidade = dataValidade;
     }
 
