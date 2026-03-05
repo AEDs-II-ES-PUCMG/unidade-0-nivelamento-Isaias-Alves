@@ -87,8 +87,15 @@ public class Comercio {
 
                 for (int i = 0; i < quantidadeProdutos && leitor.hasNextLine(); i++) {
                     String linha = leitor.nextLine();
-                    vetorProdutos[quantosProdutos] = Produto.criarDoTexto(linha);
-                    quantosProdutos++;
+                    try {
+                        // Tenta criar o produto
+                        vetorProdutos[quantosProdutos] = Produto.criarDoTexto(linha);
+                        quantosProdutos++;
+                    } catch (IllegalArgumentException e) {
+                        // Se a data estiver vencida, o construtor joga o erro aqui
+                        // O programa apenas avisa e pula para o próximo produto do arquivo
+                        System.out.println("Aviso: Pulando produto vencido no arquivo -> " + linha);
+                    }
                 }
             } else {
                 System.out.println("Arquivo vazio: " + nomeArquivoDados);
@@ -150,36 +157,66 @@ public class Comercio {
      * Uma sugestão de melhoria mais significativa poderia ser o uso de padrão
      * Factory Method para criação dos objetos.
      */
-    static void cadastrarProduto() {
-        if (quantosProdutos >= produtosCadastrados.length) {
-            System.out.println("Erro: Limite do vetor atingido.");
-            return;
-        }
+static void cadastrarProduto() {
+    if (quantosProdutos >= produtosCadastrados.length) {
+        System.out.println("Erro: Limite do vetor atingido.");
+        return;
+    }
 
+    try {
         System.out.println("Tipo de produto: (1) Não Perecível | (2) Perecível");
         int tipo = Integer.parseInt(teclado.nextLine());
 
         System.out.print("Descrição: ");
         String desc = teclado.nextLine();
+        
         System.out.print("Preço de custo: ");
         double custo = Double.parseDouble(teclado.nextLine().replace(",", "."));
-        System.out.print("Margem de lucro (ex: 0,3 para 30%): ");
-        double margem = Double.parseDouble(teclado.nextLine().replace(",", "."));
+
+        System.out.print("Margem de lucro (Enter para padrão 20%): ");
+        String margemInput = teclado.nextLine().replace(",", ".");
+        
+        Produto novo = null;
 
         if (tipo == 1) {
-            produtosCadastrados[quantosProdutos] = new ProdutoNaoPerecivel(desc, custo, margem);
-            quantosProdutos++;
+            // Se o input da margem estiver vazio, usa o construtor da Margem Padrão
+            if (margemInput.isEmpty()) {
+                novo = new ProdutoNaoPerecivel(desc, custo);
+            } else {
+                double margem = Double.parseDouble(margemInput);
+                novo = new ProdutoNaoPerecivel(desc, custo, margem);
+            }
         } else if (tipo == 2) {
             System.out.print("Data de validade (dd/mm/aaaa): ");
             String dataStr = teclado.nextLine();
             DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             LocalDate validade = LocalDate.parse(dataStr, formato);
 
-            produtosCadastrados[quantosProdutos] = new ProdutoPerecivel(desc, custo, margem, validade);
-            quantosProdutos++;
+            if (margemInput.isEmpty()) {
+                // Para o Perecível, como o construtor padrão geralmente exige a data,
+                // passamos 0.2 (ou o valor da sua constante MARGEM_PADRAO) manualmente
+                novo = new ProdutoPerecivel(desc, custo, 0.2, validade);
+            } else {
+                double margem = Double.parseDouble(margemInput);
+                novo = new ProdutoPerecivel(desc, custo, margem, validade);
+            }
         }
-        System.out.println("Produto cadastrado com sucesso!");
+
+        if (novo != null) {
+            produtosCadastrados[quantosProdutos] = novo;
+            quantosProdutos++;
+            salvarProdutos(nomeArquivoDados);
+            System.out.println("Produto cadastrado com sucesso!");
+        }
+
+    } catch (NumberFormatException e) {
+        System.out.println("Erro: Valor numérico inválido.");
+    } catch (java.time.format.DateTimeParseException e) {
+        System.out.println("Erro: Formato de data inválido. Use dd/mm/aaaa.");
+    } catch (IllegalArgumentException e) {
+        System.out.println("Erro no cadastro: " + e.getMessage());
     }
+}
 
     /**
      * Salva os dados dos produtos cadastrados no arquivo csv informado. Sobrescreve

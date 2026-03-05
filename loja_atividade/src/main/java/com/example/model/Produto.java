@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.format.DateTimeFormatter;
 
-
 public abstract class Produto {
 
 	private static final double MARGEM_PADRAO = 0.2;
@@ -87,10 +86,9 @@ public abstract class Produto {
 	 */
 	@Override
 	public String toString() {
-
 		NumberFormat moeda = NumberFormat.getCurrencyInstance();
-
-		return String.format("NOME: " + descricao + ": " + moeda.format(valorVenda()));
+		// %s para o nome e %s para a string da moeda
+		return String.format("NOME: %s: %s", descricao, moeda.format(valorVenda()));
 	}
 
 	/**
@@ -134,9 +132,9 @@ public abstract class Produto {
 		double precoCusto = Double.parseDouble(dados[2]);
 		double margemLucro = Double.parseDouble(dados[3]);
 
-		if (tipo == 1){
+		if (tipo == 1) {
 			novoProduto = new ProdutoNaoPerecivel(descricao, precoCusto, margemLucro);
-		} else if (tipo == 2){
+		} else if (tipo == 2) {
 			DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 			LocalDate dataValidade = LocalDate.parse(dados[4], formato);
 			novoProduto = new ProdutoPerecivel(descricao, precoCusto, margemLucro, dataValidade);

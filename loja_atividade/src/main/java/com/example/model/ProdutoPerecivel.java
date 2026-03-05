@@ -38,10 +38,12 @@ public class ProdutoPerecivel extends Produto {
 
     @Override
     public String toString() {
-        return super.toString() + " | Validade: " + dataValidade;
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        String dataFormatada = formato.format(dataValidade);
+        return super.toString() + " | Validade: " + dataFormatada;
     }
 
-    /**
+    /** 
      * Gera uma linha de texto a partir dos dados do produto. Preço e margem de
      * lucro vão formatados com 2 casas
      * decimais.
@@ -56,8 +58,8 @@ public class ProdutoPerecivel extends Produto {
         String precoFormatado = String.format("%.2f", getPrecoCusto()).replace(',', '.');
         String margemFormatada = String.format("%.2f", getMargemLucro()).replace(',', '.');
         String dataFormatada = formato.format(dataValidade);
-        return String.format(java.util.Locale.US, "2;%s;%.2f;%.2f;%s",
-                getDescricao(), precoFormatado, margemFormatada, dataFormatada);
+        return String.format(java.util.Locale.US, "2;%s;%s;%s;%s", 
+                         getDescricao(), precoFormatado, margemFormatada, dataFormatada);
     }
 
 }
