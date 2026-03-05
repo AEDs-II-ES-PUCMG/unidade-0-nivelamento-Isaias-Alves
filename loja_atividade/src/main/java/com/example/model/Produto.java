@@ -3,6 +3,7 @@ package com.example.model;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 import java.time.format.DateTimeFormatter;
 
 public abstract class Produto {
@@ -86,9 +87,8 @@ public abstract class Produto {
 	 */
 	@Override
 	public String toString() {
-		NumberFormat moeda = NumberFormat.getCurrencyInstance();
-		// %s para o nome e %s para a string da moeda
-		return String.format("NOME: %s: %s", descricao, moeda.format(valorVenda()));
+		NumberFormat moeda = NumberFormat.getCurrencyInstance(new Locale("pt", "BR"));
+    	return String.format("NOME: %s: %s", descricao, moeda.format(valorVenda()));
 	}
 
 	/**
