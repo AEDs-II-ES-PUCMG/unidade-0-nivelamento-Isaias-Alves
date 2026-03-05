@@ -10,8 +10,8 @@ public class ProdutoPerecivel extends Produto {
     private static final double DESCONTO = 0.25;
     private static final int PRAZO_DESCONTO = 7;
 
-    public ProdutoPerecivel(String desc, double precoCusto, double margemLucro, LocalDate validade) {
-        super(desc, precoCusto, margemLucro);
+    public ProdutoPerecivel(String desc, double precoCusto, double margemLucro, LocalDate validade, int quantidadeEmEstoque) {
+        super(desc, precoCusto, margemLucro, quantidadeEmEstoque);
         setDataValidade(validade);
         if (dataValidade.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Data de validade não pode ser mais antiga que a data atual");
@@ -57,9 +57,10 @@ public class ProdutoPerecivel extends Produto {
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         String precoFormatado = String.format("%.2f", getPrecoCusto()).replace(',', '.');
         String margemFormatada = String.format("%.2f", getMargemLucro()).replace(',', '.');
+        String quantidadeFormatada = String.format("%d", getQuantidadeEmEstoque()).replace(',', '.');
         String dataFormatada = formato.format(dataValidade);
-        return String.format(java.util.Locale.US, "2;%s;%s;%s;%s", 
-                         getDescricao(), precoFormatado, margemFormatada, dataFormatada);
+        return String.format(java.util.Locale.US, "2;%s;%s;%s;%s;%s", 
+                         getDescricao(), precoFormatado, margemFormatada, dataFormatada, quantidadeFormatada);
     }
 
 }

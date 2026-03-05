@@ -131,7 +131,7 @@ public class Comercio {
 
         // Criamos um objeto temporário para usar o equals que você implementou
         // (Pois seu equals recebe um Object e faz cast para Produto)
-        Produto temporario = new ProdutoNaoPerecivel(busca, 1, 0.1);
+        Produto temporario = new ProdutoNaoPerecivel(busca, 1, 0.1, 1);
         boolean encontrado = false;
 
         for (int i = 0; i < quantosProdutos; i++) {
@@ -175,16 +175,19 @@ static void cadastrarProduto() {
 
         System.out.print("Margem de lucro (Enter para padrão 20%): ");
         String margemInput = teclado.nextLine().replace(",", ".");
+
+        System.out.print("Quantidade em estoque ");
+        int quantidadeInput = Integer.parseInt(teclado.nextLine().replace(",", "."));
         
         Produto novo = null;
 
         if (tipo == 1) {
             // Se o input da margem estiver vazio, usa o construtor da Margem Padrão
             if (margemInput.isEmpty()) {
-                novo = new ProdutoNaoPerecivel(desc, custo);
+                novo = new ProdutoNaoPerecivel(desc, custo, quantidadeInput);
             } else {
                 double margem = Double.parseDouble(margemInput);
-                novo = new ProdutoNaoPerecivel(desc, custo, margem);
+                novo = new ProdutoNaoPerecivel(desc, custo, margem, quantidadeInput);
             }
         } else if (tipo == 2) {
             System.out.print("Data de validade (dd/mm/aaaa): ");
@@ -195,10 +198,10 @@ static void cadastrarProduto() {
             if (margemInput.isEmpty()) {
                 // Para o Perecível, como o construtor padrão geralmente exige a data,
                 // passamos 0.2 (ou o valor da sua constante MARGEM_PADRAO) manualmente
-                novo = new ProdutoPerecivel(desc, custo, 0.2, validade);
+                novo = new ProdutoPerecivel(desc, custo, 0.2, validade, quantidadeInput);
             } else {
                 double margem = Double.parseDouble(margemInput);
-                novo = new ProdutoPerecivel(desc, custo, margem, validade);
+                novo = new ProdutoPerecivel(desc, custo, margem, validade, quantidadeInput);
             }
         }
 
